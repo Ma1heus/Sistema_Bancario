@@ -1,5 +1,6 @@
 from time import sleep
 
+
 posicao = 0
 saldo_total = 0
 
@@ -11,19 +12,39 @@ def linhas(tamanho=40, cor='\033[32m'):
     """
     print(f"{cor}{'-' * tamanho}\033[m")
 
+
+def menu () :
+    menu = f"""\033[34m
+    [d] Depositar
+    [s] Sacar
+    [e] Extrato
+    [l] Sair\033[m
+
+    => """
+    return input (menu).lower()[0]
+
+
 def depositos_realizados():
     global posicao
     global saldo_total
 
     linhas ()
     valor_depositado = float (input ('Digite o valor a ser depositado: '))
-    depositos.append (valor_depositado)
-    saldo_total += depositos [posicao]
-    posicao += 1
+    linhas ()
+    if valor_depositado > 0:
+        depositos.append (valor_depositado)
+        saldo_total += depositos [posicao]
+        posicao += 1
+        print (f'\033[36mDepositando o valor de R$ {valor_depositado:.2f}\nGuarde...\033[m')
+        sleep (1)
+        print ('\033[32mDepósito realizado com sucesso!!\033[m')
+    else:
+        print('\033[31m Operação falhou! O valor informado é inválido.\033[m')
 
-    print (f'\033[36mDepositando o valor de R$ {valor_depositado:.2f}\nGuarde...\033[m')
-    sleep (1)
-    print ('\033[32mDepósito realizado com sucesso!!\033[m')
+
+def saques():
+    print()
+    
 
 vezes_utilizadas = 0
 depositos = []
@@ -31,13 +52,8 @@ limite = 500
 numero_saques = 0
 limite_saques = 3
 
-menu = f"""\033[34m
-    [d] Depositar
-    [s] Sacar
-    [e] Extrato
-    [l] Sair\033[m
 
-=> """
+
 
 linhas()
 print(f'\033[36m{'Bem-Vindo ao Banco do Brasil':^40}\033[m')
@@ -46,20 +62,20 @@ print('Escolha uma opção para começarmos: ')
 
 while True:
     if vezes_utilizadas == 0:
-        opcao = input(menu).lower()
+        opcao = menu()
         vezes_utilizadas = 1
 
     else:
         linhas ()
         print('Escolha sua próxima operação: ')
-        opcao = input (menu).lower()
+        opcao = menu()
 
     if opcao == 'd':
         depositos_realizados()
 
     elif opcao == 's':
         linhas ()
-
+        saques()
         sleep (1)
 
     elif opcao == 'e':
@@ -72,6 +88,7 @@ while True:
     elif opcao == 'l':
         linhas ()
         print('Obrigado pela sua preferência. Ótimo dia!')
+        linhas ()
         sleep (1)
         break
 
