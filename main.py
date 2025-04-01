@@ -24,7 +24,6 @@ def depositos_realizados():
     print (f'\033[36mDepositando o valor de R$ {valor_depositado:.2f}\nGuarde...\033[m')
     sleep (1)
     print ('\033[32mDepósito realizado com sucesso!!\033[m')
-    print (f'Saldo atual é: R$ {saldo_total:.2f}')
 
 vezes_utilizadas = 0
 depositos = []
@@ -60,6 +59,7 @@ while True:
 
     elif opcao == 's':
         linhas ()
+
         sleep (1)
 
     elif opcao == 'e':
