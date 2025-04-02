@@ -1,8 +1,7 @@
 from time import sleep
 
+posicao = 0 #arrumar isso depois
 
-posicao = 0
-saldo_total = 0
 
 def linhas(tamanho=40, cor='\033[32m'):
     """
@@ -24,16 +23,15 @@ def menu () :
     return input (menu).lower()[0]
 
 
-def depositos_realizados():
+def depositos_realizados(saldo, extrato):
     global posicao
-    global saldo_total
 
     linhas ()
     valor_depositado = float (input ('Digite o valor a ser depositado: '))
     linhas ()
     if valor_depositado > 0:
-        depositos.append (valor_depositado)
-        saldo_total += depositos [posicao]
+        extrato += f'\nDepósito: \033[32m{f'R$ {valor_depositado:.2f}':^15}\033[m'
+        saldo += valor_depositado
         posicao += 1
         print (f'\033[36mDepositando o valor de R$ {valor_depositado:.2f}\nGuarde...\033[m')
         sleep (1)
@@ -41,19 +39,43 @@ def depositos_realizados():
     else:
         print('\033[31m Operação falhou! O valor informado é inválido.\033[m')
 
+    return saldo, extrato
 
-def saques():
-    print()
-    
 
+def saques(*, saldo, extrato, numero_saques):
+    linhas ()
+    valor_saque = float (input ('Informe o valor do saque: '))
+    excedeu_saldo = valor_saque > saldo
+    excedeu_limite = valor_saque > 500
+    excedeu_saque = numero_saques >= 3
+    numero_saques += 1
+
+    if excedeu_saque:
+        print('\033[31m Operação falhou! Limite de saque diário atingido.\033[m')
+    elif excedeu_limite:
+        print ('\033[31m Operação falhou! O valor excedeu o limite permitido.\033[m')
+    elif excedeu_saldo:
+        print ('\033[31m Operação falhou! O valor excedeu o saldo disponível.\033[m')
+    else:
+        saldo -= valor_saque
+        print(f'\033[32mSaque Autorizado!\033[m')
+        sleep (1)
+        extrato += f'\nSaque: \033[31m{f'- R$ {valor_saque:.2f}':^18}\033[m'
+
+    return saldo, extrato
+
+
+def exibir_extrato(saldo, /, *, extrato):
+    linhas()
+    print('Não foram realizadas movimentações.' if not extrato else f'Extrato Completo:\n {extrato}')
+    print(f'\nSaldo:\t\033[33m{f'R$ {saldo:.2f}':^19}\033[m')
+    sleep(1)
+
+
+saldo = 0
 vezes_utilizadas = 0
-depositos = []
-limite = 500
+extrato = ''
 numero_saques = 0
-limite_saques = 3
-
-
-
 
 linhas()
 print(f'\033[36m{'Bem-Vindo ao Banco do Brasil':^40}\033[m')
@@ -71,19 +93,13 @@ while True:
         opcao = menu()
 
     if opcao == 'd':
-        depositos_realizados()
+        saldo, extrato = depositos_realizados(saldo, extrato)
 
     elif opcao == 's':
-        linhas ()
-        saques()
-        sleep (1)
+        saldo, extrato = saques(saldo=saldo, extrato=extrato, numero_saques=numero_saques)
 
     elif opcao == 'e':
-        linhas ()
-        print (f'Depósitos realizados: ')
-        for valores in depositos:
-            print(f'R$ {valores}')
-        sleep (1)
+        exibir_extrato(saldo, extrato=extrato)
 
     elif opcao == 'l':
         linhas ()
@@ -93,5 +109,6 @@ while True:
         break
 
     else:
-        print('Operação inválida, por favor selecione novamente a operção desejada.')
+        linhas()
+        print('\033[31mOperação inválida, por favor selecione novamente a operação desejada.\033[m')
         sleep (1)
